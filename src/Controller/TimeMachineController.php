@@ -40,6 +40,26 @@ class TimeMachineController extends AbstractController
 
         $randomTimeMachine = $timeMachines[array_rand($timeMachines)];
 
+        $tenantId = "common";
+        $clientId = "85d0a6d1-02e7-45f6-87d9-971c9ab4a8c1";
+
+        $guzzle = new \GuzzleHttp\Client();
+        $url = 'https://login.microsoftonline.com/' . $tenantId . '/oauth2/v2.0/authorize';
+        $params = array([
+            'client_id' => $clientId,
+            'response_type' => 'code',
+            'redirect_uri' => 'http://localhost:8000/time-machine/random',
+            'response_mode' => 'query',
+            'scope' => 'https://graph.microsoft.com/.default',
+            'state' => '12345',
+        ]);
+
+        // call the API and ignore certificate errors
+        $response = $guzzle->request('GET', $url, $params);
+        $response = json_decode($response->getBody(), true);
+
+
+
         return new JsonResponse([
             'id' => $randomTimeMachine->getId(),
             'name' => $randomTimeMachine->getName(),
